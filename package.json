@@ -1,0 +1,9 @@
+{
+  "name": "FakeCreditCard",
+  "version": "1.0.0",
+  "description": "Fake Credit Card Number Generator - http://creditcardvalidator.org",
+  "main": "index.js",
+  "repository": "https://github.com/pedrorobsonleao/fake-credit-card",
+  "author": "pedro.leao@gmail.com",
+  "license": "MIT"
+}

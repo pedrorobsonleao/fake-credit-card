@@ -1,6 +1,6 @@
 /* jshint esversion:8 */
 
-const fakeCreditCard = ((howMany) => {
+const fakeCreditCard = (() => {
     const _flags = {
         ELO: "elo",
         JCB: "jcb",
@@ -9,16 +9,17 @@ const fakeCreditCard = ((howMany) => {
         DINERS: "diners",
         MASTER: "master",
         VOYAGER: "voyager",
-        ENROUTE: "en_route",
+        ENROUTE: "enroute",
         DISCOVER: "discover",
-        UNIONPAY: "union_pay",
+        UNIONPAY: "unionpay",
         HIPERCARD: "hipercard"
     };
 
-    var _pseudoRandom = Math.random;
+    let _pseudoRandom = Math.random;
+    let howMany = null;
 
     const scheme = (() => {
-        var lst = {};
+        let lst = {};
         Object.keys(_flags).forEach(key => {
             switch (key) {
                 case "MASTER":
@@ -43,24 +44,24 @@ const fakeCreditCard = ((howMany) => {
     };
 
     const completed_number = (prefix, length) => {
-        var ccnumber = prefix;
+        let ccnumber = prefix;
 
         while (ccnumber.length < (length - 1)) {
             ccnumber += Math.floor(_pseudoRandom() * 10);
         }
 
-        var reversedCCnumberString = strrev(ccnumber);
-        var reversedCCnumber = [];
+        let reversedCCnumberString = strrev(ccnumber);
+        let reversedCCnumber = [];
 
-        for (var i = 0; i < reversedCCnumberString.length; i++) {
+        for (let i = 0; i < reversedCCnumberString.length; i++) {
             reversedCCnumber[i] = parseInt(reversedCCnumberString.charAt(i));
         }
 
-        var sum = 0;
-        var pos = 0;
+        let sum = 0;
+        let pos = 0;
 
         while (pos < length - 1) {
-            var odd = reversedCCnumber[pos] * 2;
+            let odd = reversedCCnumber[pos] * 2;
 
             if (odd > 9) {
                 odd -= 9;
@@ -74,33 +75,33 @@ const fakeCreditCard = ((howMany) => {
             pos += 2;
         }
 
-        var checkdigit = ((Math.floor(sum / 10) + 1) * 10 - sum) % 10;
+        let checkdigit = ((Math.floor(sum / 10) + 1) * 10 - sum) % 10;
 
         ccnumber += checkdigit;
         return ccnumber;
     };
 
     const credit_card_number = (prefixList, length, howMany) => {
-        var result = [];
+        let result = [];
 
-        for (var i = 0; i < howMany; i++) {
-            var randomArrayIndex = Math.floor(_pseudoRandom() * prefixList.length);
-            var ccnumber = prefixList[randomArrayIndex];
+        for (let i = 0; i < howMany; i++) {
+            let randomArrayIndex = Math.floor(_pseudoRandom() * prefixList.length);
+            let ccnumber = prefixList[randomArrayIndex];
             result.push(completed_number(ccnumber, length));
         }
         return result;
     };
 
     const generate = (flag, howMany, randomGen) => {
-        _pseudoRandom = randomGen || _pseudoRandom; 
-        var amount = howMany || 1; 
-        
-        if(Object.keys(_flags).indexOf(flag) >= 0) {
+        _pseudoRandom = randomGen || _pseudoRandom;
+        let amount = howMany || 1;
+
+        if (Object.keys(_flags).indexOf(flag) >= 0) {
             return credit_card_number(
                 scheme[flag].prefixList,
                 scheme[flag].digitCount,
                 amount
-                );
+            );
         }
 
         throw {
@@ -110,16 +111,16 @@ const fakeCreditCard = ((howMany) => {
     };
 
     const getCards = (flag) => {
-        var list = [];
+        let list = [];
         generate(flag, howMany).forEach(card => {
-            list.push({number:card });
+            list.push({ number: card });
         });
         return list;
     };
 
     const getExpiration = (flag) => {
         return getCards(flag).filter(number => {
-            number.exception = Math.round(Math.random() * 11 + 1) + "/" + parseInt(new Date().getFullYear() * 1 + (Math.round(Math.random() * 7)));
+            number.expiration = Math.round(Math.random() * 11 + 1) + "/" + parseInt(new Date().getFullYear() * 1 + (Math.round(Math.random() * 7)));
             return true;
         });
     };
@@ -131,19 +132,29 @@ const fakeCreditCard = ((howMany) => {
         });
     };
 
+    const _getCards = (flag) => {
+        flag = flag.toUpperCase();
+        return {
+            withCvv: getCvv(flag),
+            cardNumber: getCards(flag),
+            withExpiration: getExpiration(flag)
+        };
+    };
+
+    const _setHowMany = (many) => {
+
+        howMany = many;
+
+        return {
+            flag: _getCards
+        };
+    };
+
     return {
-        card: (flag) => {
-            return {
-                cvv: getCvv(flag),
-                numbers: getCards(flag),
-                expiration: getExpiration(flag)
-            };
-        }
+        flags: _flags,
+        howMany: _setHowMany,
+        flag: _getCards
     };
 })();
 
-console.log(JSON.stringify({
-    onlyCards: fakeCreditCard.card("VISA").numbers, 
-    cardsAndExipration: fakeCreditCard.card("VISA").expiration,
-    cardsExpirationAndCvv: fakeCreditCard.card("VISA").cvv
-}));
+module.exports = fakeCreditCard;

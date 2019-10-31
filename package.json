@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/pedrorobsonleao/fake-credit-card",
   "author": "pedro.leao@gmail.com",
-  "license": "GPL",
+  "license": "LGPL-3.0",
   "devDependencies": {
     "mocha": "^6.2.2"
   },

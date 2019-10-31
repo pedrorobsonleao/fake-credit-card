@@ -9,13 +9,17 @@ This is only to test use or studies.
 
 ## how to
 
-### install dependencies
+### install
+
+to install package run:
 
 ```bash
-yarn install
+yarn add fake-credit-card
 ```
 
-### run tests
+### test
+
+to run unity tests
 
 ```bash
 yarn test
@@ -65,3 +69,6 @@ support to this credcard flags.
   'UNIONPAY',
   'HIPERCARD' ]
 ```
+
+## contacts
+pedro.leao@gmail.com

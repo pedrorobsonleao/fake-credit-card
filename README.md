@@ -52,7 +52,7 @@ node
 ```
 read test file to more sample.
 
-## comming
+## coming
 
 support to this credcard flags.
 ```javascript
